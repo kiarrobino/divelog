@@ -8,10 +8,10 @@ tasks:
   app:build:
     desc: build the application
     cmds:
-      - go build -o bin/diveLog cmd/main.go
+      - go build -o bin/divelog cmd/divelog/main.go
   app:run:
     desc: run the application
     aliases: [app]
     deps: [app:build]
     cmds:
-      - ./bin/diveLog
+      - ./bin/divelog

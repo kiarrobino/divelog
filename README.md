@@ -1,1 +1,1 @@
-# diveLog
+# divelog
