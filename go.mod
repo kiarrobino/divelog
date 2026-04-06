@@ -1,4 +1,4 @@
-module github.com/kiarrobino/diveLog
+module github.com/kiarrobino/divelog
 
 go 1.25.1
 

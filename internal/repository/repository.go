@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/kiarrobino/diveLog/internal/model"
+	"github.com/kiarrobino/divelog/internal/model"
 )
 
 type DiveRepository interface {

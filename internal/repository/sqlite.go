@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/kiarrobino/diveLog/internal/model"
+	"github.com/kiarrobino/divelog/internal/model"
 	_ "github.com/mattn/go-sqlite3"
 )
 
