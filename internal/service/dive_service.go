@@ -32,9 +32,6 @@ func (s *DiveService) CreateDive(ctx context.Context, input model.CreateDiveInpu
 	if input.Rating != 0 && (input.Rating < 1 || input.Rating > 5) {
 		return nil, model.ErrInvalidRating
 	}
-	if input.Visibility != 0 && (input.Visibility < 1 || input.Visibility > 5) {
-		return nil, model.ErrInvalidVisibility
-	}
 
 	id := uuid.New().String()
 

@@ -58,7 +58,7 @@ func (r *SQLiteRepository) Create(ctx context.Context, dive *model.Dive) error {
             id, dive_number, date, site_name, location,
             max_depth, avg_depth, duration, water_temp, visibility,
             tank_start, tank_end, o2_percent, water_type, dive_type,
-            buddy, notes, rating, created_at, updated_at
+            notes, rating, created_at, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		dive.ID, dive.DiveNumber, dive.Date, dive.SiteName, dive.Location,
 		dive.MaxDepth, dive.AvgDepth, dive.Duration, dive.WaterTemp, dive.Visibility,
