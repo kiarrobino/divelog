@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/kiarrobino/divelog/internal/calculator"
 	"github.com/kiarrobino/divelog/internal/model"
 	"github.com/kiarrobino/divelog/internal/repository"
 )
@@ -84,4 +85,16 @@ func (s *DiveService) ListDives(ctx context.Context, limit, offset int) ([]*mode
 		return nil, fmt.Errorf("list dives: %w", err)
 	}
 	return dives, nil
+}
+
+func (s *DiveService) CalculateNDL(depth, o2Percent float64) (int, error) {
+	if depth <= 0 {
+		return 0, model.ErrInvalidDepth
+	}
+	if o2Percent < 21 || o2Percent > 100 {
+		return 0, model.ErrInvalidO2Percent
+	}
+
+	ndl := calculator.Calculate(depth, o2Percent)
+	return ndl, nil
 }

@@ -97,3 +97,27 @@ func (h *DiveHandler) List(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(dives)
 }
+
+func (h *DiveHandler) NDL(w http.ResponseWriter, r *http.Request) {
+	var input model.NDLInput
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		if errors.Is(err, model.ErrInvalidDepth) ||
+			errors.Is(err, model.ErrInvalidO2Percent) {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	ndl, err := h.svc.CalculateNDL(input.Depth, input.O2Percent)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(ndl)
+}

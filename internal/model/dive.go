@@ -7,12 +7,12 @@ type Dive struct {
 	DiveNumber int
 	Date       time.Time `json:"date"`
 	SiteName   string    `json:"site_name"`
-	Location   string    `json:"location"`   // TODO: Coordinates?
-	MaxDepth   float64   `json:"max_depth"`  // feet
-	AvgDepth   float64   `json:"avg_depth"`  // feet
+	Location   string    `json:"location"`
+	MaxDepth   float64   `json:"max_depth"`  // metres
+	AvgDepth   float64   `json:"avg_depth"`  // metres
 	Duration   int       `json:"duration"`   // minutes
 	WaterTemp  float64   `json:"water_temp"` // fahrenheit
-	Visibility float64   `json:"visibility"` // feet
+	Visibility float64   `json:"visibility"` // metres
 	TankStart  int       `json:"tank_start"` // bar
 	TankEnd    int       `json:"tank_end"`   // bar
 	O2Percent  float64   `json:"o2_percent"` // 21.0 = air
@@ -40,4 +40,9 @@ type CreateDiveInput struct {
 	DiveType   string  `json:"dive_type"`
 	Notes      string  `json:"notes"`
 	Rating     int     `json:"rating"`
+}
+
+type NDLInput struct {
+	Depth     float64 `json:"depth"`
+	O2Percent float64 `json:"o2_percent"`
 }
