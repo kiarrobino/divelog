@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/kiarrobino/divelog/internal/exporter"
 	"github.com/kiarrobino/divelog/internal/model"
 	"github.com/kiarrobino/divelog/internal/service"
 )
@@ -120,4 +121,21 @@ func (h *DiveHandler) NDL(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(ndl)
+}
+
+func (h *DiveHandler) Export(w http.ResponseWriter, r *http.Request) {
+	dives, err := h.svc.ListDives(r.Context(), 10000, 0)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", `attachment; filename="divelog.csv"`)
+
+	err = exporter.WriteCSV(w, dives)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }

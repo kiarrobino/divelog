@@ -29,6 +29,7 @@ func main() {
 	r.Get("/dives/{id}", h.GetByID)
 	r.Get("/dives", h.List)
 	r.Post("/ndl", h.NDL)
+	r.Get("/export/csv", h.Export)
 
 	log.Println("listening on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
