@@ -25,11 +25,15 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Post("/dives", h.Create)
-	r.Get("/dives/{id}", h.GetByID)
-	r.Get("/dives", h.List)
-	r.Post("/ndl", h.NDL)
-	r.Get("/export/csv", h.Export)
+	r.Route("/api", func(r chi.Router) {
+		r.Post("/dives", h.Create)
+		r.Post("/ndl", h.NDL)
+		r.Get("/dives/{id}", h.GetByID)
+		r.Get("/dives", h.List)
+		r.Get("/export/csv", h.Export)
+	})
+
+	r.Handle("/*", http.FileServer(http.Dir("web/static")))
 
 	log.Println("listening on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))

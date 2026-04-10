@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dive Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0b1a2e;
+    color: #d4e5f7;
+    min-height: 100vh;
+  }
+
+  .bubbles {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bubble {
+    position: absolute;
+    bottom: -60px;
+    background: rgba(201, 168, 76, 0.07);
+    border: 1px solid rgba(201, 168, 76, 0.18);
+    border-radius: 50%;
+    animation: rise linear infinite;
+  }
+
+  @keyframes rise {
+    0%   { bottom: -60px; opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.5; }
+    100% { bottom: 100vh; opacity: 0; }
+  }
+
+  header {
+    background: #091525;
+    border-bottom: none;
+    padding: 20px 40px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: #c9a84c;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .logo span {
+    color: #d4e5f7;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 6px;
+    opacity: 0.6;
+  }
+
+  nav button {
+    background: transparent;
+    border: 1px solid #c9a84c;
+    color: #c9a84c;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+
+  nav button:hover { background: #c9a84c; color: #091525; }
+
+  .rope {
+    height: 6px;
+    position: relative;
+    z-index: 1;
+    background: repeating-linear-gradient(
+      90deg,
+      #8b6914 0px,
+      #c9a84c 3px,
+      #e8c86a 6px,
+      #c9a84c 9px,
+      #8b6914 12px,
+      #a07830 15px,
+      #8b6914 18px
+    );
+    opacity: 0.85;
+    box-shadow: 0 2px 8px rgba(201, 168, 76, 0.3);
+  }
+
+  .container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 36px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .grid { display: grid; grid-template-columns: 1fr 400px; gap: 28px; }
+
+  .card {
+    background: #0f2035;
+    border: 1px solid #1e3a5f;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid #1e3a5f;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: #c9a84c;
+    font-weight: 600;
+  }
+
+  .card-body { padding: 20px 24px; }
+
+  .dive-item {
+    display: grid;
+    grid-template-columns: 52px 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 8px;
+    border-bottom: 1px solid #1e3a5f;
+    transition: background 0.15s;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  .dive-item:last-child { border-bottom: none; }
+  .dive-item:hover { background: rgba(201, 168, 76, 0.06); }
+
+  .dive-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #c9a84c;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .dive-num-sub {
+    font-size: 9px;
+    color: #4a7a9b;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .dive-site { font-size: 15px; font-weight: 500; color: #d4e5f7; }
+  .dive-meta { font-size: 12px; color: #4a7a9b; margin-top: 3px; }
+
+  .dive-depth {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: #c9a84c;
+    text-align: right;
+  }
+
+  .dive-dur { font-size: 11px; color: #4a7a9b; text-align: right; margin-top: 2px; }
+
+  .tabs { display: flex; border-bottom: 1px solid #1e3a5f; }
+
+  .tab {
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4a7a9b;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .tab:hover { color: #d4e5f7; }
+  .tab.active { color: #c9a84c; border-bottom-color: #c9a84c; }
+
+  .tab-panel { display: none; padding: 20px 24px; }
+  .tab-panel.active { display: block; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: #4a7a9b;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  input, select {
+    width: 100%;
+    background: #091525;
+    border: 1px solid #1e3a5f;
+    border-radius: 4px;
+    padding: 9px 12px;
+    color: #d4e5f7;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input:focus, select:focus { border-color: #c9a84c; }
+  select option { background: #0f2035; }
+
+  .btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 4px;
+    border: none;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  .btn-primary { background: #c9a84c; color: #091525; }
+  .btn-primary:hover { background: #dfc06a; }
+
+  .ndl-box {
+    background: #091525;
+    border: 1px solid #1e3a5f;
+    border-radius: 6px;
+    padding: 24px 20px;
+    margin-top: 16px;
+    text-align: center;
+    display: none;
+  }
+
+  .ndl-box.show { display: block; }
+
+  .ndl-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    font-weight: 700;
+    color: #c9a84c;
+    line-height: 1;
+  }
+
+  .ndl-unit {
+    font-size: 11px;
+    color: #4a7a9b;
+    margin-top: 6px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: #0f2035;
+    border: 1px solid #c9a84c;
+    border-radius: 6px;
+    padding: 14px 22px;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: all 0.3s;
+    pointer-events: none;
+    color: #d4e5f7;
+    z-index: 100;
+  }
+
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.error { border-color: #c0392b; color: #e74c3c; }
+
+  .empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: #4a7a9b;
+    font-size: 14px;
+  }
+
+  .empty-icon { font-size: 36px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<div class="bubbles" id="bubbles"></div>
+
+<header>
+  <div class="logo">
+    Dive Log
+    <span>Personal Dive Journal</span>
+  </div>
+  <nav>
+    <button onclick="exportCSV()">Export CSV</button>
+  </nav>
+</header>
+<div class="rope"></div>
+
+<div class="container">
+  <div class="grid">
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Recent Dives</h2>
+      </div>
+      <div class="card-body" id="dive-list">
+        <div class="empty">
+          <div class="empty-icon">⚓</div>
+          No dives logged yet
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('tab-log', this)">Log Dive</div>
+        <div class="tab" onclick="switchTab('tab-ndl', this)">NDL Calc</div>
+      </div>
+
+      <div class="tab-panel active" id="tab-log">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Site Name *</label>
+            <input id="f-site" type="text" placeholder="Blue Corner">
+          </div>
+          <div class="form-group">
+            <label>Location *</label>
+            <input id="f-location" type="text" placeholder="Palau">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input id="f-date" type="date">
+          </div>
+          <div class="form-group">
+            <label>Dive Type</label>
+            <select id="f-type">
+              <option value="recreational">Recreational</option>
+              <option value="drift">Drift</option>
+              <option value="wreck">Wreck</option>
+              <option value="cave">Cave</option>
+              <option value="night">Night</option>
+              <option value="deep">Deep</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Max Depth (m) *</label>
+            <input id="f-depth" type="number" step="0.5" placeholder="30">
+          </div>
+          <div class="form-group">
+            <label>Duration (min) *</label>
+            <input id="f-duration" type="number" placeholder="55">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Water Temp (°C)</label>
+            <input id="f-temp" type="number" step="0.5" placeholder="28">
+          </div>
+          <div class="form-group">
+            <label>Visibility (m)</label>
+            <input id="f-vis" type="number" placeholder="20">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tank Start (bar)</label>
+            <input id="f-tank-start" type="number" placeholder="200">
+          </div>
+          <div class="form-group">
+            <label>Tank End (bar)</label>
+            <input id="f-tank-end" type="number" placeholder="60">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>O2 %</label>
+            <input id="f-o2" type="number" step="0.5" value="21">
+          </div>
+          <div class="form-group">
+            <label>Water Type</label>
+            <select id="f-water">
+              <option value="salt">Salt</option>
+              <option value="fresh">Fresh</option>
+              <option value="brackish">Brackish</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="submitDive()">Log Dive</button>
+      </div>
+
+      <div class="tab-panel" id="tab-ndl">
+        <div class="form-group">
+          <label>Planned Depth (m)</label>
+          <input id="ndl-depth" type="number" placeholder="30" oninput="calcNDL()">
+        </div>
+        <div class="form-group">
+          <label>O2 % (21 = Air)</label>
+          <input id="ndl-o2" type="number" value="21" oninput="calcNDL()">
+        </div>
+        <div class="ndl-box" id="ndl-result">
+          <div class="ndl-unit">No-Decompression Limit</div>
+          <div class="ndl-number" id="ndl-val">—</div>
+          <div class="ndl-unit">minutes</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // Bubbles
+  const bubbleContainer = document.getElementById('bubbles');
+  for (let i = 0; i < 20; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = Math.random() * 22 + 5;
+    b.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      left: ${Math.random() * 100}%;
+      animation-duration: ${Math.random() * 12 + 8}s;
+      animation-delay: ${Math.random() * 12}s;
+    `;
+    bubbleContainer.appendChild(b);
+  }
+
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+
+  function toast(msg, error = false) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show' + (error ? ' error' : '');
+    setTimeout(() => el.className = 'toast', 3200);
+  }
+
+  function switchTab(id, el) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  async function loadDives() {
+    try {
+      const res = await fetch('/api/dives?limit=20&offset=0');
+      const data = await res.json();
+      const list = document.getElementById('dive-list');
+
+      if (!data.dives || data.dives.length === 0) {
+        list.innerHTML = '<div class="empty"><div class="empty-icon">⚓</div>No dives logged yet</div>';
+        return;
+      }
+
+      list.innerHTML = data.dives.map(d => `
+        <div class="dive-item">
+          <div>
+            <div class="dive-num">${d.dive_number}</div>
+            <div class="dive-num-sub">dive</div>
+          </div>
+          <div>
+            <div class="dive-site">${d.site_name}</div>
+            <div class="dive-meta">${d.location} &nbsp;·&nbsp; ${d.date.split('T')[0]} &nbsp;·&nbsp; ${d.dive_type}</div>
+          </div>
+          <div>
+            <div class="dive-depth">${d.max_depth}m</div>
+            <div class="dive-dur">${d.duration}min</div>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  async function submitDive() {
+    const site = document.getElementById('f-site').value.trim();
+    const location = document.getElementById('f-location').value.trim();
+    const depth = parseFloat(document.getElementById('f-depth').value);
+    const duration = parseInt(document.getElementById('f-duration').value);
+
+    if (!site || !location || !depth || !duration) {
+      toast('Please fill in required fields', true);
+      return;
+    }
+
+    const payload = {
+      site_name: site,
+      location,
+      date: document.getElementById('f-date').value,
+      max_depth: depth,
+      avg_depth: depth * 0.6,
+      duration_min: duration,
+      water_temp: parseFloat(document.getElementById('f-temp').value) || 0,
+      visibility: parseFloat(document.getElementById('f-vis').value) || 0,
+      tank_start: parseInt(document.getElementById('f-tank-start').value) || 200,
+      tank_end: parseInt(document.getElementById('f-tank-end').value) || 50,
+      o2_percent: parseFloat(document.getElementById('f-o2').value) || 21,
+      dive_type: document.getElementById('f-type').value,
+      water_type: document.getElementById('f-water').value,
+      rating: 0,
+    };
+
+    const res = await fetch('/api/dives', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      toast(err.error || 'Something went wrong', true);
+      return;
+    }
+
+    const dive = await res.json();
+    toast(`✓ Dive #${dive.dive_number} logged — ${dive.site_name}`);
+    loadDives();
+  }
+
+  async function calcNDL() {
+    const depth = parseFloat(document.getElementById('ndl-depth').value);
+    const o2 = parseFloat(document.getElementById('ndl-o2').value) || 21;
+    if (!depth || depth <= 0) return;
+
+    const res = await fetch('/api/ndl', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ depth, o2_percent: o2 }),
+    });
+
+    if (!res.ok) return;
+    const data = await res.json();
+    document.getElementById('ndl-result').classList.add('show');
+    document.getElementById('ndl-val').textContent = data;
+  }
+
+  function exportCSV() {
+    window.location.href = '/api/export/csv';
+  }
+
+  loadDives();
+</script>
+</body>
+</html>
