@@ -3,8 +3,8 @@ package model
 import "time"
 
 type Dive struct {
-	ID         string
-	DiveNumber int
+	ID         string    `json:"id"`
+	DiveNumber int       `json:"dive_number"`
 	Date       time.Time `json:"date"`
 	SiteName   string    `json:"site_name"`
 	Location   string    `json:"location"`

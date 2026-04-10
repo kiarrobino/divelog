@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dive Log</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤿</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -478,15 +479,15 @@
   async function loadDives() {
     try {
       const res = await fetch('/api/dives?limit=20&offset=0');
-      const data = await res.json();
+      const dives = await res.json();
       const list = document.getElementById('dive-list');
 
-      if (!data.dives || data.dives.length === 0) {
+      if (!dives || dives.length === 0) {
         list.innerHTML = '<div class="empty"><div class="empty-icon">⚓</div>No dives logged yet</div>';
         return;
       }
 
-      list.innerHTML = data.dives.map(d => `
+      list.innerHTML = dives.map(d => `
         <div class="dive-item">
           <div>
             <div class="dive-num">${d.dive_number}</div>
@@ -524,7 +525,7 @@
       date: document.getElementById('f-date').value,
       max_depth: depth,
       avg_depth: depth * 0.6,
-      duration_min: duration,
+      duration: duration,
       water_temp: parseFloat(document.getElementById('f-temp').value) || 0,
       visibility: parseFloat(document.getElementById('f-vis').value) || 0,
       tank_start: parseInt(document.getElementById('f-tank-start').value) || 200,
