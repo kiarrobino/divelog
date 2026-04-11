@@ -38,6 +38,13 @@ tasks:
       - kind create cluster --name divelog
       - kind load docker-image divelog:latest --name divelog
       - helm install divelog ./helm/divelog
+  k8s:upgrade:
+    desc: deploy latest version of application to already running local kubernetes cluster
+    aliases: [upgrade]
+    deps: [image:build]
+    cmds: 
+      - kind load docker-image divelog:latest --name divelog
+      - helm upgrade divelog ./helm/divelog
   k8s:db:backup:
     desc: run script to backup the local kubernetes cluster database
     cmds:
