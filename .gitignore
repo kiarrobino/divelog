@@ -1,4 +1,4 @@
 bin/
-divelog.db
+data/
 coverage.out
 vendor/

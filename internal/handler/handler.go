@@ -20,6 +20,11 @@ func NewDiveHandler(svc *service.DiveService) *DiveHandler {
 	return &DiveHandler{svc: svc}
 }
 
+func (h *DiveHandler) Health(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"status":"ok"}`))
+}
+
 func (h *DiveHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var input model.CreateDiveInput
 	err := json.NewDecoder(r.Body).Decode(&input)

@@ -1,12 +1,17 @@
 # https://taskfile.dev/docs/guide
-version: '3'
+version: "3"
 
 tasks:
   default:
     cmds:
       - task -l
+  app:clean:
+    desc: remove existing binaries
+    cmds:
+      - rm bin/*
   app:build:
     desc: build the application
+    deps: [app:clean]
     cmds:
       - go build -o bin/divelog cmd/divelog/main.go
   app:run:
@@ -18,17 +23,42 @@ tasks:
   image:build:
     desc: build the application as a docker image
     cmds:
-      - docker build -t divelog:local .
+      - docker build -t divelog:local -t divelog:latest .
   image:run:
     desc: run the application as docker image
     aliases: [image]
     deps: [image:build]
-    cmds: 
-      - docker run --name divelog -it -d -p 8080:8080 -v $(pwd)/data:/app/data -e DB_PATH=/app/data/divelog.db divelog:local 
+    cmds:
+      - docker run --name divelog -it -d -p 8080:8080 -v $(pwd)/data:/app/data -e DB_PATH=/app/data/divelog.db divelog:local
+  k8s:deploy:
+    desc: run the application in a local kubernetes cluster
+    aliases: [up]
+    deps: [image:build]
+    cmds:
+      - kind create cluster --name divelog
+      - kind load docker-image divelog:latest --name divelog
+      - helm install divelog ./helm/divelog
+  k8s:db:backup:
+    desc: run script to backup the local kubernetes cluster database
+    cmds:
+      - mkdir -p data/backups
+      - bash scripts/backup.sh
+  k8s:db:restore:
+    desc: restore local kubernetes cluster database from backup
+    cmds:
+      - kubectl cp {{.FILE}} $(kubectl get pods -l app.kubernetes.io/name=divelog -o jsonpath="{.items[0].metadata.name}"):/app/data/divelog.db
+      - kubectl rollout restart deploy/divelog
+  k8s:teardown:
+    desc: stop the local kubernetes cluster
+    aliases: [down]
+    cmds:
+      - kind delete cluster --name divelog
   test:unit:
     desc: run the application unit tests
     aliases: [test]
     cmds:
       - go test ./... -coverprofile=coverage.out -v
       - go tool cover -func=coverage.out
-  
+  db:clean:
+    desc: remove all existing database backups
+      - rm data/backups/*

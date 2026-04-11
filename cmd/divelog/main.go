@@ -33,6 +33,7 @@ func main() {
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/dives", h.Create)
 		r.Post("/ndl", h.NDL)
+		r.Get("/health", h.Health)
 		r.Get("/dives/{id}", h.GetByID)
 		r.Get("/dives", h.List)
 		r.Get("/export/csv", h.Export)
