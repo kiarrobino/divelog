@@ -30,8 +30,6 @@ A full-stack personal scuba dive log built in Go. Features a REST API, CLI, and 
     - [Run](#run)
   - [Kubernetes \& Helm](#kubernetes--helm)
     - [Prerequisites](#prerequisites-1)
-    - [Create a local cluster](#create-a-local-cluster)
-    - [Load the image into kind](#load-the-image-into-kind)
     - [Deploy](#deploy)
     - [Verify](#verify)
     - [Upgrade after changes](#upgrade-after-changes)
@@ -52,19 +50,22 @@ DiveLog is a personal dive logging application that allows scuba divers to recor
 ## Architecture
 
 The application follows a clean layered architecture with clear separation of concerns:
+
+```
 HTTP Request
-│
-▼
-Handler        ← decodes requests, encodes responses, maps errors to HTTP status codes
-│
-▼
-Service        ← business logic, validation, orchestration
-│
-▼
-Repository      ← data persistence interface
-│
-▼
-SQLite        ← storage implementation
+     │
+     ▼
+  Handler        ← decodes requests, encodes responses, maps errors to HTTP status codes
+     │
+     ▼
+  Service        ← business logic, validation, orchestration
+     │
+     ▼
+ Repository      ← data persistence interface
+     │
+     ▼
+   SQLite        ← storage implementation
+```
 
 Each layer only communicates with the layer directly below it. The repository layer is interface-driven — the service layer never depends on a concrete implementation, making the storage backend swappable with zero changes to business logic.
 
@@ -151,13 +152,19 @@ open http://localhost:8080
 ## REST API
 
 ### Dives
+
+```
 POST   /api/dives          Log a new dive
 GET    /api/dives          List dives (?limit=20&offset=0)
 GET    /api/dives/{id}     Get a single dive by ID
 DELETE /api/dives/{id}     Delete a dive
+```
 
 ### NDL Calculator
+
+```
 POST /api/ndl
+```
 
 Request body:
 ```json
@@ -168,11 +175,17 @@ Request body:
 ```
 
 ### Export
+
+```
 GET /api/export/csv    Download dive log as CSV
+```
 
 ### System
+
+```
 GET /api/health     Liveness/readiness check
 GET /api/metrics    Prometheus metrics
+```
 
 ### Example: Log a dive
 
@@ -272,22 +285,10 @@ The multi-stage Dockerfile keeps the final image lean by only including the comp
 - helm
 - kubectl
 
-### Create a local cluster
-
-```bash
-kind create cluster --name divelog
-```
-
-### Load the image into kind
-
-```bash
-kind load docker-image divelog:latest --name divelog
-```
-
 ### Deploy
 
 ```bash
-helm install divelog ./helm/divelog
+task up
 ```
 
 ### Verify
@@ -301,9 +302,7 @@ curl http://localhost:8080/api/health
 ### Upgrade after changes
 
 ```bash
-docker build -t divelog:latest .
-kind load docker-image divelog:latest --name divelog
-helm upgrade divelog ./helm/divelog
+task upgrade
 ```
 
 ### Backup database
@@ -340,6 +339,8 @@ These metrics are ready to be scraped by a Prometheus instance. When deploying t
 ---
 
 ## Project Structure
+
+```bash
 divelog/
 ├── cmd/
 │   └── divelog/
@@ -382,3 +383,4 @@ divelog/
 ├── Taskfile.yml
 ├── go.mod
 └── README.md
+```
