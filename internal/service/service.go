@@ -30,6 +30,9 @@ func (s *DiveService) CreateDive(ctx context.Context, input model.CreateDiveInpu
 	if input.Duration <= 0 {
 		return nil, model.ErrInvalidDuration
 	}
+	if input.O2Percent < 21 || input.O2Percent > 100 {
+		return nil, model.ErrInvalidO2Percent
+	}
 	if input.Rating != 0 && (input.Rating < 1 || input.Rating > 5) {
 		return nil, model.ErrInvalidRating
 	}
@@ -87,14 +90,11 @@ func (s *DiveService) ListDives(ctx context.Context, limit, offset int) ([]*mode
 	return dives, nil
 }
 
-func (s *DiveService) CalculateNDL(depth, o2Percent float64) (int, error) {
+func (s *DiveService) CalculateNDL(depth float64) (int, error) {
 	if depth <= 0 {
 		return 0, model.ErrInvalidDepth
 	}
-	if o2Percent < 21 || o2Percent > 100 {
-		return 0, model.ErrInvalidO2Percent
-	}
 
-	ndl := calculator.Calculate(depth, o2Percent)
+	ndl := calculator.Calculate(depth)
 	return ndl, nil
 }

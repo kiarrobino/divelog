@@ -15,3 +15,9 @@ tasks:
     deps: [app:build]
     cmds:
       - ./bin/divelog
+  test:unit:
+    desc: run the application unit tests
+    aliases: [test]
+    cmds:
+      - go test ./... -coverprofile=coverage.out -v
+      - go tool cover -func=coverage.out

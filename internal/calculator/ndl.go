@@ -18,7 +18,7 @@ var ndlTable = map[float64]int{
 // Calculate returns the no-decompression limit in minutes for a given depth.
 // Depth is rounded to the nearest entry in the NDL table. If the depth
 // exceeds 40m, 0 is returned — recreational diving does not go beyond 40m.
-func Calculate(depth, o2Percent float64) int {
+func Calculate(depth float64) int {
 	// Round up to the nearest table depth — always conservative.
 	for _, tableDepth := range []float64{10, 12, 14, 16, 18, 20, 25, 30, 35, 40} {
 		if depth <= tableDepth {

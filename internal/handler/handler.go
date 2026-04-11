@@ -112,7 +112,7 @@ func (h *DiveHandler) NDL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ndl, err := h.svc.CalculateNDL(input.Depth, input.O2Percent)
+	ndl, err := h.svc.CalculateNDL(input.Depth)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
