@@ -7,13 +7,16 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/kiarrobino/divelog/internal/config"
 	"github.com/kiarrobino/divelog/internal/handler"
 	"github.com/kiarrobino/divelog/internal/repository"
 	"github.com/kiarrobino/divelog/internal/service"
 )
 
 func main() {
-	repo, err := repository.NewSQLiteRepository("divelog.db")
+	conf := config.Load()
+
+	repo, err := repository.NewSQLiteRepository(conf.DBPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,6 +38,6 @@ func main() {
 
 	r.Handle("/*", http.FileServer(http.Dir("web/static")))
 
-	log.Println("listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Printf("listening on %s", conf.Addr)
+	log.Fatal(http.ListenAndServe(conf.Addr, r))
 }

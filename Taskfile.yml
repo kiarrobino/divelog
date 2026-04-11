@@ -15,9 +15,20 @@ tasks:
     deps: [app:build]
     cmds:
       - ./bin/divelog
+  image:build:
+    desc: build the application as a docker image
+    cmds:
+      - docker build -t divelog:local .
+  image:run:
+    desc: run the application as docker image
+    aliases: [image]
+    deps: [image:build]
+    cmds: 
+      - docker run --name divelog -it -d -p 8080:8080 -v $(pwd)/data:/app/data -e DB_PATH=/app/data/divelog.db divelog:local 
   test:unit:
     desc: run the application unit tests
     aliases: [test]
     cmds:
       - go test ./... -coverprofile=coverage.out -v
       - go tool cover -func=coverage.out
+  
