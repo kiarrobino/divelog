@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/kiarrobino/divelog/internal/config"
 	"github.com/kiarrobino/divelog/internal/handler"
@@ -27,6 +28,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(handler.MetricsMiddleware)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/dives", h.Create)
@@ -34,6 +36,7 @@ func main() {
 		r.Get("/dives/{id}", h.GetByID)
 		r.Get("/dives", h.List)
 		r.Get("/export/csv", h.Export)
+		r.Handle("/metrics", promhttp.Handler())
 	})
 
 	r.Handle("/*", http.FileServer(http.Dir("web/static")))
