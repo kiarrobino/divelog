@@ -150,7 +150,6 @@
     padding: 16px 8px;
     border-bottom: 1px solid #1e3a5f;
     transition: background 0.15s;
-    cursor: pointer;
     border-radius: 4px;
   }
 
@@ -185,6 +184,25 @@
   }
 
   .dive-dur { font-size: 11px; color: #4a7a9b; text-align: right; margin-top: 2px; }
+
+  .delete-btn {
+    background: transparent;
+    border: 1px solid #c0392b;
+    color: #c0392b;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: all 0.2s;
+    display: block;
+    width: 100%;
+  }
+
+  .delete-btn:hover {
+    background: #c0392b;
+    color: white;
+  }
 
   .tabs { display: flex; border-bottom: 1px solid #1e3a5f; }
 
@@ -444,7 +462,6 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // Bubbles
   const bubbleContainer = document.getElementById('bubbles');
   for (let i = 0; i < 20; i++) {
     const b = document.createElement('div');
@@ -500,12 +517,29 @@
           <div>
             <div class="dive-depth">${d.max_depth}m</div>
             <div class="dive-dur">${d.duration}min</div>
+            <button class="delete-btn" onclick="deleteDive('${d.id}')">✕ Delete</button>
           </div>
         </div>
       `).join('');
     } catch(e) {
       console.error(e);
     }
+  }
+
+  async function deleteDive(id) {
+    if (!confirm('Delete this dive?')) return;
+
+    const res = await fetch(`/api/dives/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!res.ok) {
+      toast('Failed to delete dive', true);
+      return;
+    }
+
+    toast('Dive deleted');
+    loadDives();
   }
 
   async function submitDive() {
