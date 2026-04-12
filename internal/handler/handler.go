@@ -104,6 +104,23 @@ func (h *DiveHandler) List(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(dives)
 }
 
+func (h *DiveHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	err := h.svc.DeleteDive(r.Context(), id)
+	if err != nil {
+		if errors.Is(err, model.ErrDiveNotFound) {
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func (h *DiveHandler) NDL(w http.ResponseWriter, r *http.Request) {
 	var input model.NDLInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {

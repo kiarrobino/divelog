@@ -37,6 +37,7 @@ func main() {
 		r.Get("/dives/{id}", h.GetByID)
 		r.Get("/dives", h.List)
 		r.Get("/export/csv", h.Export)
+		r.Delete("/dives/{id}", h.Delete)
 		r.Handle("/metrics", promhttp.Handler())
 	})
 

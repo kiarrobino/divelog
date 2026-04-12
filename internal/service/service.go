@@ -90,6 +90,14 @@ func (s *DiveService) ListDives(ctx context.Context, limit, offset int) ([]*mode
 	return dives, nil
 }
 
+func (s *DiveService) DeleteDive(ctx context.Context, id string) error {
+	err := s.repo.Delete(ctx, id)
+	if err != nil {
+		return fmt.Errorf("delete dive: %w", err)
+	}
+	return nil
+}
+
 func (s *DiveService) CalculateNDL(depth float64) (int, error) {
 	if depth <= 0 {
 		return 0, model.ErrInvalidDepth
