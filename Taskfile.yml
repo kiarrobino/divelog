@@ -37,12 +37,13 @@ tasks:
     cmds:
       - kind create cluster --name divelog
       - kind load docker-image ghcr.io/kiarrobino/divelog:latest --name divelog
+      - helm install monitoring prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
       - helm install divelog ./helm/divelog
   k8s:upgrade:
     desc: deploy latest version of application to already running local kubernetes cluster
     aliases: [upgrade]
     deps: [image:build]
-    cmds: 
+    cmds:
       - kind load docker-image ghcr.io/kiarrobino/divelog:latest --name divelog
       - helm upgrade divelog ./helm/divelog
   k8s:db:backup:
