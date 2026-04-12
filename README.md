@@ -1,6 +1,6 @@
 # 🤿 DiveLog
 
-A full-stack personal scuba dive log built in Go. Features a REST API, CLI, and web UI with a nautical-themed dashboard.
+A full-stack personal scuba dive log built in Go. Features a REST API, and web UI with a nautical-themed dashboard.
 
 ## Table of Contents
 
@@ -13,7 +13,6 @@ A full-stack personal scuba dive log built in Go. Features a REST API, CLI, and 
   - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Run locally](#run-locally)
-  - [CLI Usage](#cli-usage)
   - [REST API](#rest-api)
     - [Dives](#dives)
     - [NDL Calculator](#ndl-calculator)
@@ -80,7 +79,6 @@ Each layer only communicates with the layer directly below it. The repository la
 - **Health Endpoint** — `/api/health` for liveness and readiness probes
 - **Prometheus Metrics** — HTTP request count and duration exposed at `/api/metrics`
 - **Web UI** — nautical-themed single-page dashboard
-- **CLI** — full command line interface for all operations
 
 ---
 
@@ -91,7 +89,6 @@ Each layer only communicates with the layer directly below it. The repository la
 | Language | Go 1.25 |
 | Router | chi v5 |
 | Database | SQLite (via go-sqlite3) |
-| CLI | cobra |
 | Metrics | Prometheus client_golang |
 | Container | Docker (multi-stage build) |
 | Orchestration | Kubernetes via kind |
@@ -120,31 +117,6 @@ task app
 
 # Open the web UI
 open http://localhost:8080
-```
-
----
-
-## CLI Usage
-
-```bash
-# Log a dive
-./divelog log \
-  --site "Blue Corner" \
-  --location "Palau" \
-  --depth 32 \
-  --duration 58 \
-  --temp 28 \
-  --vis 25 \
-  --type drift \
-  --rating 5 \
-  --notes "Schooling barracuda!"
-
-# List recent dives
-./divelog list
-
-# Calculate NDL
-./divelog ndl --depth 30
-./divelog ndl --depth 25 --o2 32
 ```
 
 ---
@@ -344,7 +316,7 @@ These metrics are ready to be scraped by a Prometheus instance. When deploying t
 divelog/
 ├── cmd/
 │   └── divelog/
-│       └── main.go           ← entrypoint, CLI commands, HTTP server
+│       └── main.go           ← entrypoint, HTTP server
 ├── internal/
 │   ├── calculator/
 │   │   ├── ndl.go            ← NDL lookup table calculator
